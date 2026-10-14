@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FruityToons AI - Funny Fruit Cartoon Video Maker</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Poppins & Fredoka for playful cartoon look -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                        cartoon: ['Fredoka', 'cursive', 'sans-serif'],
+                    },
+                    colors: {
+                        fruit: {
+                            banana: '#FFE135',
+                            mango: '#FFB300',
+                            strawberry: '#FF5252',
+                            pineapple: '#FFD54F',
+                            watermelon: '#FF4081',
+                            kiwi: '#8BC34A',
+                            blueberry: '#3F51B5',
+                            grape: '#9C27B0',
+                            coconut: '#795548',
+                            darkbg: '#121216',
+                            cardbg: '#1E1E26'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        .font-cartoon { font-family: 'Fredoka', cursive, sans-serif; }
+        /* Custom scrollbar for horizontal lists */
+        ::-webkit-scrollbar { height: 6px; width: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); }
+        ::-webkit-scrollbar-thumb { background: rgba(255,179,0,0.5); border-radius: 9999px; }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(3deg); }
+        }
+        .animate-float { animation: float 4s ease-in-out infinite; }
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 15px rgba(255,179,0,0.5); }
+            50% { box-shadow: 0 0 30px rgba(255,82,82,0.8); }
+        }
+        .glow-btn { animation: pulse-glow 3s infinite; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-amber-50 via-rose-50 to-orange-100 text-gray-800 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900 dark:text-gray-100 min-h-full flex flex-col selection:bg-amber-400 selection:text-black">
+
+    <header class="sticky top-0 z-50 backdrop-blur-md bg-white/80 dark:bg-gray-900/80 border-b border-amber-100 dark:border-gray-800 shadow-sm transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('home')">
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-400 to-rose-500 flex items-center justify-center shadow-md text-white text-2xl transform hover:rotate-12 transition-transform">
+                    🍌
+                </div>
+                <span class="font-cartoon text-2xl font-bold bg-gradient-to-r from-amber-500 via-rose-500 to-purple-600 bg-clip-text text-transparent">
+                    FruityToons <span class="text-xs uppercase bg-amber-400 text-gray-900 px-2 py-0.5 rounded-full font-sans tracking-wider align-super">AI</span>
+                </span>
+            </div>
+
+            <!-- Desktop Nav Links -->
+            <nav class="hidden md:flex items-center space-x-1 font-medium text-sm">
+                <button onclick="switchTab('home')" class="nav-btn px-4 py-2 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-amber-100 dark:hover:bg-gray-800 transition active-nav" data-target="home">
+                    <i class="fa-solid fa-house mr-2 text-amber-500"></i>Home
+                </button>
+                <button onclick="switchTab('studio')" class="nav-btn px-4 py-2 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-amber-100 dark:hover:bg-gray-800 transition" data-target="studio">
+                    <i class="fa-solid fa-wand-magic-sparkles mr-2 text-rose-500"></i>AI Studio
+                </button>
+                <button onclick="switchTab('library')" class="nav-btn px-4 py-2 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-amber-100 dark:hover:bg-gray-800 transition" data-target="library">
+                    <i class="fa-solid fa-lemon mr-2 text-yellow-500"></i>Characters
+                </button>
+                <button onclick="switchTab('projects')" class="nav-btn px-4 py-2 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-amber-100 dark:hover:bg-gray-800 transition" data-target="projects">
+                    <i class="fa-solid fa-film mr-2 text-purple-500"></i>My Studio <span id="projectCountBadge" class="ml-1 bg-rose-500 text-white text-xs px-1.5 py-0.2 rounded-full">0</span>
+                </button>
+                <button onclick="switchTab('pricing')" class="nav-btn px-4 py-2 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-amber-100 dark:hover:bg-gray-800 transition" data-target="pricing">
+                    <i class="fa-solid fa-crown mr-2 text-amber-500"></i>Pro Plans
+                </button>
+            </nav>
+
+            <div class="flex items-center space-x-3">
+                <button onclick="toggleDarkMode()" class="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:scale-105 transition" title="Toggle Theme">
+                    <i id="themeIcon" class="fa-solid fa-moon"></i>
+                </button>
+                <button onclick="openAuthModal()" id="authNavBtn" class="hidden sm:flex items-center space-x-2 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 text-gray-900 font-semibold shadow-md hover:opacity-95 transition text-sm">
+                    <i class="fa-solid fa-user-circle"></i><span id="authBtnText">Sign In</span>
+                </button>
+                <button onclick="switchTab('studio')" class="glow-btn px-5 py-2.5 rounded-2xl bg-gradient-to-r from-rose-500 to-purple-600 text-white font-cartoon text-lg tracking-wide shadow-lg hover:scale-105 transition flex items-center space-x-2">
+                    <i class="fa-solid fa-play"></i><span>Create Cartoon</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-24 md:pb-10">
+
+        <!-- ==================== HOME TAB ==================== -->
+        <section id="view-home" class="view-section space-y-12">
+            <!-- Hero Banner -->
+            <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500 p-8 sm:p-12 text-white shadow-xl">
+                <div class="absolute -right-10 -bottom-10 text-9xl opacity-20 select-none font-cartoon animate-float">🍌</div>
+                <div class="absolute -left-10 -top-10 text-9xl opacity-20 select-none font-cartoon animate-float" style="animation-delay: 2s;">🍉</div>
+                <div class="relative z-10 max-w-2xl space-y-6">
+                    <span class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-semibold bg-white/20 backdrop-blur-md uppercase tracking-wider">
+                        ✨ #1 AI Fruity Cartoon Video Maker for TikTok & Shorts
+                    </span>
+                    <h1 class="font-cartoon text-4xl sm:text-6xl font-bold leading-tight tracking-wide drop-shadow-md">
+                        Make Hilarious Talking Fruit Cartoons in Seconds!
+                    </h1>
+                    <p class="text-lg sm:text-xl text-amber-50 font-medium">
+                        Transform funny ideas, jokes, or gossip into viral 9:16 animated videos with Bobo Banana, Mimo Mango, and custom fruit stars!
+                    </p>
+                    <div class="flex flex-wrap gap-4 pt-2">
+                        <button onclick="switchTab('studio')" class="px-8 py-4 rounded-2xl bg-white text-gray-900 font-cartoon text-xl font-bold shadow-2xl hover:bg-amber-50 transform hover:scale-105 transition flex items-center space-x-3">
+                            <i class="fa-solid fa-wand-magic-sparkles text-rose-500"></i><span>Create My Cartoon Now</span>
+                        </button>
+                        <button onclick="switchTab('library')" class="px-6 py-4 rounded-2xl bg-black/30 backdrop-blur-md text-white font-semibold hover:bg-black/40 transition border border-white/20 flex items-center space-x-2">
+                            <i class="fa-solid fa-users"></i><span>Meet Characters</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats & Viral Badge -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-amber-100 dark:border-gray-700 text-center">
+                    <div class="text-3xl font-cartoon font-bold text-amber-500">1.2M+</div>
+                    <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">Videos Generated</div>
+                </div>
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-amber-100 dark:border-gray-700 text-center">
+                    <div class="text-3xl font-cartoon font-bold text-rose-500">50K+</div>
+                    <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">Viral TikTok Hits</div>
+                </div>
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-amber-100 dark:border-gray-700 text-center">
+                    <div class="text-3xl font-cartoon font-bold text-purple-500">8+</div>
+                    <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">Crazy Fruit Stars</div>
+                </div>
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-amber-100 dark:border-gray-700 text-center">
+                    <div class="text-3xl font-cartoon font-bold text-emerald-500">100%</div>
+                    <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">Mobile Friendly</div>
+                </div>
+            </div>
+
+            <!-- Trending Video Ideas Bar -->
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <h2 class="font-cartoon text-2xl font-bold flex items-center space-x-2">
+                        <i class="fa-solid fa-fire text-orange-500"></i><span>Trending Viral Prompts</span>
+                    </h2>
+                    <span class="text-xs text-gray-500 dark:text-gray-400">Click to load in AI Studio</span>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="trendingPromptsGrid">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- Popular Characters Showcase -->
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <h2 class="font-cartoon text-2xl font-bold flex items-center space-x-2">
+                        <i class="fa-solid fa-star text-amber-500"></i><span>Meet The Fruity Stars</span>
+                    </h2>
+                    <button onclick="switchTab('library')" class="text-amber-600 dark:text-amber-400 font-semibold text-sm hover:underline">View All & Custom →</button>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4" id="homeCharactersGrid">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- Community Recently Created Videos Carousel / Grid -->
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <h2 class="font-cartoon text-2xl font-bold flex items-center space-x-2">
+                        <i class="fa-solid fa-video text-rose-500"><span>Community Hits (9:16 Reels)</span></i>
+                    </h2>
+                    <button onclick="loadDemoVideos()" class="text-xs px-3 py-1.5 rounded-lg bg-rose-100 dark:bg-gray-800 text-rose-600 dark:text-rose-400 font-semibold hover:bg-rose-200 transition">
+                        <i class="fa-solid fa-rotate mr-1"></i> Refresh Feed
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-6" id="communityVideosGrid">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- How It Works Section -->
+            <div class="bg-white dark:bg-gray-800 rounded-3xl p-8 border border-amber-100 dark:border-gray-700 shadow-sm space-y-8">
+                <div class="text-center max-w-xl mx-auto space-y-2">
+                    <span class="text-amber-500 font-bold text-xs uppercase tracking-widest">Super Simple 3-Step Process</span>
+                    <h2 class="font-cartoon text-3xl font-bold">How To Make A Viral Fruit Cartoon</h2>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm">No animation skills needed. Let AI do the heavy lifting!</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="bg-amber-50/50 dark:bg-gray-900/50 p-6 rounded-2xl border border-amber-200/50 dark:border-gray-700 text-center space-y-4">
+                        <div class="w-16 h-16 mx-auto rounded-2xl bg-amber-400 text-gray-900 flex items-center justify-center text-3xl font-cartoon font-bold shadow-md">1</div>
+                        <h3 class="font-cartoon text-xl font-bold">Write or Prompt</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Type any funny scenario like "Bobo Banana argues with Apple Boss about office coffee" or pick a viral template.</p>
+                    </div>
+                    <div class="bg-rose-50/50 dark:bg-gray-900/50 p-6 rounded-2xl border border-rose-200/50 dark:border-gray-700 text-center space-y-4">
+                        <div class="w-16 h-16 mx-auto rounded-2xl bg-rose-500 text-white flex items-center justify-center text-3xl font-cartoon font-bold shadow-md">2</div>
+                        <h3 class="font-cartoon text-xl font-bold">Customize & AI Generate</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Choose character personalities, background setting (Kitchen, Market, Office), voices, and hit Generate Video!</p>
+                    </div>
+                    <div class="bg-purple-50/50 dark:bg-gray-900/50 p-6 rounded-2xl border border-purple-200/50 dark:border-gray-700 text-center space-y-4">
+                        <div class="w-16 h-16 mx-auto rounded-2xl bg-purple-500 text-white flex items-center justify-center text-3xl font-cartoon font-bold shadow-md">3</div>
+                        <h3 class="font-cartoon text-xl font-bold">Download & Go Viral</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Preview with auto subtitles, hilarious sound effects, and BGM. Download MP4 and upload to TikTok or Reels!</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== AI STUDIO TAB ==================== -->
+        <section id="view-studio" class="view-section hidden space-y-8">
+            <div class="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-3xl p-6 sm:p-8 text-white shadow-lg flex flex-col sm:flex-row items-center justify-between gap-6">
+                <div class="space-y-2">
+                    <span class="bg-white/20 text-xs px-3 py-1 rounded-full uppercase tracking-wider">🎬 AI Video Generation Studio</span>
+                    <h2 class="font-cartoon text-3xl font-bold">Create Your Cartoon Masterpiece</h2>
+                    <p class="text-purple-100 text-sm max-w-xl">Configure characters, script, funny settings, voices, and background music below.</p>
+                </div>
+                <button onclick="generateScriptWithAI()" class="px-6 py-3 rounded-2xl bg-amber-400 text-gray-900 font-cartoon font-bold text-lg shadow-xl hover:bg-amber-300 transition flex items-center space-x-2">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i><span>Auto-Generate Script</span>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Left 2 Cols: Controls & Config -->
+                <div class="lg:col-span-2 space-y-6">
+                    <!-- Step 1: Prompt & Category -->
+                    <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 border border-amber-100 dark:border-gray-700 shadow-sm space-y-4">
+                        <h3 class="font-cartoon text-xl font-bold flex items-center space-x-2">
+                            <span class="w-8 h-8 rounded-xl bg-amber-400 text-gray-900 flex items-center justify-center text-sm">1</span>
+                            <span>Story Idea & Comedy Category</span>
+                        </h3>
+                        <div>
+                            <label class="block text-sm font-medium mb-1 text-gray-600 dark:text-gray-300">What is happening in this cartoon?</label>
+                            <textarea id="storyPromptInput" rows="3" class="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-4 text-sm focus:ring-2 focus:ring-amber-400 focus:outline-none transition" placeholder="e.g. Bobo Banana tries to impress Mimo Mango with a cheesy pickup line in the supermarket, but slips on a peel!"></textarea>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-1 text-gray-600 dark:text-gray-300">Comedy Category</label>
+                                <select id="comedyCategorySelect" class="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-3 text-sm focus:ring-2 focus:ring-amber-400 focus:outline-none">
+                                    <option value="Fruit Gossip">🗣️ Fruit Gossip & Rumors</option>
+                                    <option value="Relationship Drama">💔 Romantic Drama & Flirting</option>
+                                    <option value="Workplace Comedy">💼 Workplace Comedy (Apple Boss)</option>
+                                    <option value="School Comedy">🏫 School Comedy & Exams</option>
+                                    <option value="Dancing Challenge">💃 TikTok Dancing Challenge</option>
+                                    <option value="African-Inspired Humour">🌍 African-Inspired Humour & Proverbs</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1 text-gray-600 dark:text-gray-300">Setting / Background</label>
+                                <select id="settingSelect" class="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-3 text-sm focus:ring-2 focus:ring-amber-400 focus:outline-none">
+                                    <option value="Supermarket">🛒 Supermarket aisle</option>
+                                    <option value="Kitchen">🍳 Cozy Kitchen counter</option>
+                                    <option value="Office">🏢 Apple Boss Office</option>
+                                    <option value="School">🏫 Fruit Academy Classroom</option>
+                                    <option value="Village Square">🌳 African Village Square</option>
+                                    <option value="Fantasy World">✨ Magical Fruit Kingdom</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Characters & Personalities -->
+                    <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 border border-amber-100 dark:border-gray-700 shadow-sm space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-cartoon text-xl font-bold flex items-center space-x-2">
+                                <span class="w-8 h-8 rounded-xl bg-rose-500 text-white flex items-center justify-center text-sm">2</span>
+                                <span>Choose Characters (Max 3)</span>
+                            </h3>
+                            <button onclick="switchTab('library')" class="text-xs text-rose-500 font-semibold hover:underline">+ Create Custom Fruit</button>
+                        </div>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" id="studioCharacterCheckboxes">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Format & Audio Settings -->
+                    <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 border border-amber-100 dark:border-gray-700 shadow-sm space-y-4">
+                        <h3 class="font-cartoon text-xl font-bold flex items-center space-x-2">
+                            <span class="w-8 h-8 rounded-xl bg-purple-500 text-white flex items-center justify-center text-sm">3</span>
+                            <span>Format, Duration & Audio</span>
+                        </h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-1 text-gray-600 dark:text-gray-300">Aspect Ratio</label>
+                                <select id="aspectRatioSelect" class="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-3 text-sm focus:ring-2 focus:ring-amber-400">
+                                    <option value="9:16">📱 9:16 Vertical (TikTok/Reels/Shorts)</option>
+                                    <option value="1:1">⏹️ 1:1 Square (Instagram Post)</option>
+                                    <option value="16:9">💻 16:9 Landscape (YouTube)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1 text-gray-600 dark:text-gray-300">Video Duration</label>
+                                <select id="durationSelect" class="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-3 text-sm focus:ring-2 focus:ring-amber-400">
+                                    <option value="15">15 Seconds (Quick Punchline)</option>
+                                    <option value="30" selected>30 Seconds (Viral Short)</option>
+                                    <option value="60">60 Seconds (Full Skit)</option>
+                                    <option value="90">90 Seconds (Mini Story)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1 text-gray-600 dark:text-gray-300">Background Music</label>
+                                <select id="bgmSelect" class="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-3 text-sm focus:ring-2 focus:ring-amber-400">
+                                    <option value="funny_bounce">🎵 Funny Cartoon Bounce</option>
+                                    <option value="upbeat_ukulele">🎶 Upbeat Ukulele Joy</option>
+                                    <option value="dramatic_soap">🎻 Dramatic Soap Opera</option>
+                                    <option value="afro_beat">🥁 Afrobeat Comedy Vibe</option>
+                                    <option value="none">🔇 No Music</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Editable Script & Scenes -->
+                    <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 border border-amber-100 dark:border-gray-700 shadow-sm space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-cartoon text-xl font-bold flex items-center space-x-2">
+                                <span class="w-8 h-8 rounded-xl bg-emerald-500 text-white flex items-center justify-center text-sm">4</span>
+                                <span>Scene-by-Scene Script Editor</span>
+                            </h3>
+                            <button onclick="addScene()" class="text-xs px-3 py-1.5 rounded-lg bg-emerald-100 dark:bg-gray-700 text-emerald-600 dark:text-emerald-400 font-semibold hover:bg-emerald-200 transition">
+                                <i class="fa-solid fa-plus mr-1"></i> Add Scene
+                            </button>
+                        </div>
+                        <div id="sceneEditorContainer" class="space-y-3 max-h-96 overflow-y-auto pr-1">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Col: Live Preview / Player & Generate Action -->
+                <div class="space-y-6">
+                    <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 border border-amber-100 dark:border-gray-700 shadow-sm sticky top-20 space-y-6">
+                        <h3 class="font-cartoon text-xl font-bold flex items-center space-x-2">
+                            <i class="fa-solid fa-clapperboard text-rose-500"></i>
+                            <span>Video Preview Studio</span>
+                        </h3>
+
+                        <!-- Video Player Box (Aspect Ratio Container) -->
+                        <div id="videoPlayerWrapper" class="relative w-full aspect-[9/16] bg-gradient-to-b from-gray-900 to-gray-950 rounded-2xl overflow-hidden shadow-inner flex flex-col items-center justify-center border-4 border-amber-400/30">
+                            <!-- Canvas for animation -->
+                            <canvas id="cartoonCanvas" class="w-full h-full object-cover"></canvas>
+
+                            <!-- Overlay Subtitles -->
+                            <div id="subtitleOverlay" class="absolute bottom-12 left-4 right-4 text-center px-4 py-2 bg-black/60 backdrop-blur-md rounded-xl text-white font-cartoon text-lg tracking-wide shadow-lg border border-white/10 opacity-0 transition-opacity duration-300">
+                                Ready to generate...
+                            </div>
+
+                            <!-- Watermark -->
+                            <div class="absolute top-3 right-3 bg-black/40 backdrop-blur-md text-amber-400 font-cartoon text-xs px-2.5 py-1 rounded-full border border-amber-400/20">
+                                FruityToons.ai
+                            </div>
+
+                            <!-- Initial placeholder screen -->
+                            <div id="playerPlaceholder" class="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-gray-950/80 backdrop-blur-sm z-10 space-y-4">
+                                <div class="w-20 h-20 rounded-full bg-amber-400/20 flex items-center justify-center text-4xl animate-bounce">
+                                    🍌
+                                </div>
+                                <h4 class="font-cartoon text-xl font-bold text-white">Preview Not Generated Yet</h4>
+                                <p class="text-xs text-gray-400">Configure your script and click 'Generate Video' below to watch your fruits come to life!</p>
+                            </div>
+                        </div>
+
+                        <!-- Player Controls -->
+                        <div class="flex items-center justify-center space-x-4">
+                            <button onclick="playPreview()" id="playPreviewBtn" class="px-5 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-700 hover:bg-amber-100 text-gray-800 dark:text-gray-200 font-semibold transition flex items-center space-x-2 text-sm disabled:opacity-50" disabled>
+                                <i class="fa-solid fa-play text-amber-500"></i><span>Play Preview</span>
+                            </button>
+                            <button onclick="stopPreview()" id="stopPreviewBtn" class="px-5 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-700 hover:bg-rose-100 text-gray-800 dark:text-gray-200 font-semibold transition flex items-center space-x-2 text-sm disabled:opacity-50" disabled>
+                                <i class="fa-solid fa-stop text-rose-500"></i><span>Stop</span>
+                            </button>
+                        </div>
+
+                        <!-- Progress Bar during generation -->
+                        <div id="generationProgressBox" class="hidden space-y-2">
+                            <div class="flex justify-between text-xs font-semibold text-gray-600 dark:text-gray-400">
+                                <span id="generationStatusText">Rendering video...</span>
+                                <span id="generationPercentText">0%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 dark:bg-gray-700 h-3 rounded-full overflow-hidden">
+                                <div id="generationProgressBar" class="bg-gradient-to-r from-amber-400 to-rose-500 h-full w-0 transition-all duration-300"></div>
+                            </div>
+                        </div>
+
+                        <!-- Generate Button -->
+                        <button onclick="startVideoGeneration()" id="generateVideoBtn" class="w-full py-4 rounded-2xl bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500 text-gray-900 font-cartoon text-xl font-bold shadow-xl hover:opacity-95 transform hover:scale-[1.02] transition flex items-center justify-center space-x-3">
+                            <i class="fa-solid fa-wand-magic-sparkles text-white"></i>
+                            <span class="text-white">Generate Viral Cartoon</span>
+                        </button>
+
+                        <!-- Download & Share Options (Visible after generation) -->
+                        <div id="postGenerationActions" class="hidden space-y-3 pt-2 border-t border-gray-100 dark:border-gray-700">
+                            <button onclick="downloadVideoMP4()" class="w-full py-3 rounded-xl bg-emerald-500 text-white font-semibold shadow-md hover:bg-emerald-600 transition flex items-center justify-center space-x-2">
+                                <i class="fa-solid fa-download"></i><span>Download MP4 Video</span>
+                            </button>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="shareToTikTok()" class="py-2.5 rounded-xl bg-black text-white font-semibold text-xs hover:opacity-90 transition flex items-center justify-center space-x-1.5">
+                                    <i class="fa-brands fa-tiktok"></i><span>TikTok / Reels</span>
+                                </button>
+                                <button onclick="copyMetadata()" class="py-2.5 rounded-xl bg-purple-100 dark:bg-gray-700 text-purple-700 dark:text-purple-300 font-semibold text-xs hover:bg-purple-200 transition flex items-center justify-center space-x-1.5">
+                                    <i class="fa-solid fa-copy"></i><span>Copy Tags & Title</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== CHARACTER LIBRARY TAB ==================== -->
+        <section id="view-library" class="view-section hidden space-y-8">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-3xl border border-amber-100 dark:border-gray-700 shadow-sm">
+                <div>
+                    <span class="text-amber-500 text-xs font-bold uppercase tracking-wider">Fruit Stars & Customizer</span>
+                    <h2 class="font-cartoon text-3xl font-bold">Fruit Character Library</h2>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm">Explore pre-made funny fruit personalities or create your own custom cartoon fruit!</p>
+                </div>
+                <button onclick="openCustomFruitModal()" class="px-6 py-3 rounded-2xl bg-gradient-to-r from-rose-500 to-purple-600 text-white font-cartoon font-bold shadow-lg hover:scale-105 transition flex items-center space-x-2">
+                    <i class="fa-solid fa-plus"></i><span>Create Custom Fruit</span>
+                </button>
+            </div>
+
+            <!-- Pre-made Characters Grid -->
+            <div class="space-y-4">
+                <h3 class="font-cartoon text-xl font-bold">Official FruityToons Cast</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="libraryCharactersGrid">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== MY STUDIO / PROJECTS TAB ==================== -->
+        <section id="view-projects" class="view-section hidden space-y-8">
+            <div class="flex items-center justify-between bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-3xl border border-amber-100 dark:border-gray-700 shadow-sm">
+                <div>
+                    <span class="text-purple-500 text-xs font-bold uppercase tracking-wider">Cloud Storage & History</span>
+                    <h2 class="font-cartoon text-3xl font-bold">My Saved Cartoons</h2>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm">Manage, re-edit, or download your previously generated hilarious cartoon videos.</p>
+                </div>
+                <button onclick="switchTab('studio')" class="px-5 py-2.5 rounded-xl bg-amber-400 text-gray-900 font-semibold shadow-md hover:bg-amber-300 transition text-sm">
+                    + New Video
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="savedProjectsGrid">
+                <!-- Populated by JS -->
+            </div>
+        </section>
+
+        <!-- ==================== PRICING TAB ==================== -->
+        <section id="view-pricing" class="view-section hidden space-y-8">
+            <div class="text-center max-w-2xl mx-auto space-y-3">
+                <span class="px-4 py-1.5 rounded-full text-xs font-semibold bg-amber-100 dark:bg-gray-800 text-amber-600 dark:text-amber-400 uppercase tracking-wider">
+                    👑 Go Viral Without Limits
+                </span>
+                <h2 class="font-cartoon text-4xl font-bold">Simple, Transparent Plans</h2>
+                <p class="text-gray-500 dark:text-gray-400">Unlock longer videos, premium voices, custom fruit avatars, and watermark-free downloads.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <!-- Free Plan -->
+                <div class="bg-white dark:bg-gray-800 rounded-3xl p-8 border border-gray-200 dark:border-gray-700 shadow-sm space-y-6 flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="inline-block px-3 py-1 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs font-semibold uppercase">Free Starter</div>
+                        <h3 class="font-cartoon text-3xl font-bold">$0 <span class="text-sm font-normal text-gray-500">/ forever</span></h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Perfect for trying out cartoon creation and sharing quick TikTok clips.</p>
+                        <ul class="space-y-3 text-sm">
+                            <li class="flex items-center text-gray-700 dark:text-gray-300"><i class="fa-solid fa-check text-emerald-500 mr-2"></i> 5 Free Video Generations / mo</li>
+                            <li class="flex items-center text-gray-700 dark:text-gray-300"><i class="fa-solid fa-check text-emerald-500 mr-2"></i> 30s Max Video Duration</li>
+                            <li class="flex items-center text-gray-700 dark:text-gray-300"><i class="fa-solid fa-check text-emerald-500 mr-2"></i> Standard Fruit Cast (Bobo, Mimo, Stella)</li>
+                            <li class="flex items-center text-gray-400"><i class="fa-solid fa-xmark text-rose-500 mr-2"></i> Watermark on Exports</li>
+                        </ul>
+                    </div>
+                    <button onclick="selectPlan('free')" class="w-full py-3 rounded-xl bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 text-gray-800 dark:text-gray-200 font-semibold transition">
+                        Current Plan
+                    </button>
+                </div>
+
+                <!-- Pro Plan -->
+                <div class="relative bg-gradient-to-br from-amber-400 via-orange-500 to-rose-500 rounded-3xl p-8 text-white shadow-xl space-y-6 flex flex-col justify-between overflow-hidden">
+                    <div class="absolute -right-8 -top-8 text-8xl opacity-10 font-cartoon select-none">👑</div>
+                    <div class="space-y-4 relative z-10">
+                        <div class="inline-block px-3 py-1 rounded-lg bg-white/20 backdrop-blur-md text-white text-xs font-semibold uppercase">Pro Creator</div>
+                        <h3 class="font-cartoon text-4xl font-bold">$9.99 <span class="text-sm font-normal text-amber-100">/ month</span></h3>
+                        <p class="text-sm text-amber-50">For TikTokers, Reels creators, and meme page owners who want unlimited viral hits.</p>
+                        <ul class="space-y-3 text-sm">
+                            <li class="flex items-center"><i class="fa-solid fa-check text-amber-200 mr-2"></i> Unlimited AI Video Generations</li>
+                            <li class="flex items-center"><i class="fa-solid fa-check text-amber-200 mr-2"></i> Up to 90s Long Videos & Skits</li>
+                            <li class="flex items-center"><i class="fa-solid fa-check text-amber-200 mr-2"></i> Custom Fruit Character Builder</li>
+                            <li class="flex items-center"><i class="fa-solid fa-check text-amber-200 mr-2"></i> Watermark-Free 1080p MP4 Exports</li>
+                            <li class="flex items-center"><i class="fa-solid fa-check text-amber-200 mr-2"></i> Priority AI Voice Synthesis & BGM</li>
+                        </ul>
+                    </div>
+                    <button onclick="selectPlan('pro')" class="relative z-10 w-full py-4 rounded-2xl bg-white text-gray-900 font-cartoon text-lg font-bold shadow-lg hover:bg-amber-50 transition">
+                        Upgrade to Pro 🚀
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Auth Modal -->
+    <div id="authModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-amber-100 dark:border-gray-700 space-y-6 relative animate-scaleUp">
+            <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="text-center space-y-2">
+                <div class="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-tr from-amber-400 to-rose-500 flex items-center justify-center text-3xl shadow-md text-white">🍌</div>
+                <h3 class="font-cartoon text-2xl font-bold" id="authModalTitle">Welcome to FruityToons AI</h3>
+                <p class="text-xs text-gray-500 dark:text-gray-400">Sign in to save your custom cartoons and sync across devices.</p>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-medium mb-1 text-gray-600 dark:text-gray-300">Email Address</label>
+                    <input type="email" id="authEmail" class="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-3 text-sm focus:ring-2 focus:ring-amber-400 focus:outline-none" placeholder="bobo@fruitytoons.ai">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium mb-1 text-gray-600 dark:text-gray-300">Password</label>
+                    <input type="password" id="authPassword" class="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-3 text-sm focus:ring-2 focus:ring-amber-400 focus:outline-none" placeholder="••••••••">
+                </div>
+                <button onclick="handleAuthSubmit()" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 text-gray-900 font-cartoon text-lg font-bold shadow-md hover:opacity-95 transition">
+                    Sign In / Register
+                </button>
+                <div class="text-center pt-2">
+                    <button onclick="loginAsGuest()" class="text-xs text-purple-600 dark:text-purple-400 font-semibold hover:underline">Continue as Guest</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Fruit Creator Modal -->
+    <div id="customFruitModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl border border-amber-100 dark:border-gray-700 space-y-6 relative">
+            <button onclick="closeCustomFruitModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="text-center space-y-2">
+                <div class="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-tr from-rose-500 to-purple-500 flex items-center justify-center text-3xl shadow-md text-white">🍋</div>
+                <h3 class="font-cartoon text-2xl font-bold">Create Custom Fruit Star</h3>
+                <p class="text-xs text-gray-500 dark:text-gray-400">Design your own funny fruit character with custom outfit, voice, and personality.</p>
+            </div>
+            <div class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-medium mb-1 text-gray-600 dark:text-gray-300">Fruit Name</label>
+                        <input type="text" id="customFruitName" class="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-3 text-sm focus:ring-2 focus:ring-amber-400" placeholder="e.g. Ozzy Orange">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium mb-1 text-gray-600 dark:text-gray-300">Fruit Emoji / Icon</label>
+                        <select id="customFruitEmoji" class="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-3 text-sm focus:ring-2 focus:ring-amber-400">
+                            <option value="🍊">🍊 Orange</option>
+                            <option value="🍍">🍍 Pineapple</option>
+                            <option value="🥑">🥑 Avocado</option>
+                            <option value="🍑">🍑 Peach</option>
+                            <option value="🍒">🍒 Cherries</option>
+                            <option value="🫐">🫐 Blueberry</option>
+                            <option value="🥥">🥥 Coconut</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium mb-1 text-gray-600 dark:text-gray-300">Personality Vibe</label>
+                    <select id="customFruitPersonality" class="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-3 text-sm focus:ring-2 focus:ring-amber-400">
+                        <option value="funny">🤡 Sarcastic Comedian</option>
+                        <option value="dramatic">🎭 Dramatic Soap Star</option>
+                        <option value="romantic">💖 Romantic & Flirty</option>
+                        <option value="naughty">😈 Mischievous Troublemaker</option>
+                        <option value="intelligent">🧠 Super Smart Genius</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium mb-1 text-gray-600 dark:text-gray-300">Catchphrase / Quote</label>
+                    <input type="text" id="customFruitQuote" class="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-3 text-sm focus:ring-2 focus:ring-amber-400" placeholder="e.g. 'Juicy and dangerous!'">
+                </div>
+                <button onclick="saveCustomFruit()" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-rose-500 to-purple-600 text-white font-cartoon text-lg font-bold shadow-md hover:opacity-95 transition">
+                    Save to My Character Library ✨
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-t border-amber-100 dark:border-gray-800 z-40 px-6 py-2 flex justify-around items-center">
+        <button onclick="switchTab('home')" class="mobile-nav-btn flex flex-col items-center text-amber-500 transition" data-target="home">
+            <i class="fa-solid fa-house text-lg"></i>
+            <span class="text-[10px] font-semibold mt-1">Home</span>
+        </button>
+        <button onclick="switchTab('studio')" class="mobile-nav-btn flex flex-col items-center text-gray-500 dark:text-gray-400 transition" data-target="studio">
+            <i class="fa-solid fa-wand-magic-sparkles text-lg"></i>
+            <span class="text-[10px] font-semibold mt-1">Studio</span>
+        </button>
+        <button onclick="switchTab('library')" class="mobile-nav-btn flex flex-col items-center text-gray-500 dark:text-gray-400 transition" data-target="library">
+            <i class="fa-solid fa-lemon text-lg"></i>
+            <span class="text-[10px] font-semibold mt-1">Fruits</span>
+        </button>
+        <button onclick="switchTab('projects')" class="mobile-nav-btn flex flex-col items-center text-gray-500 dark:text-gray-400 transition" data-target="projects">
+            <i class="fa-solid fa-film text-lg"></i>
+            <span class="text-[10px] font-semibold mt-1">Studio</span>
+        </button>
+        <button onclick="switchTab('pricing')" class="mobile-nav-btn flex flex-col items-center text-gray-500 dark:text-gray-400 transition" data-target="pricing">
+            <i class="fa-solid fa-crown text-lg"></i>
+            <span class="text-[10px] font-semibold mt-1">Pro</span>
+        </button>
+    </nav>
+
+    <script>
+        /* ==================== GLOBAL APP STATE ==================== */
+        const AppState = {
+            currentTab: 'home',
+            user: { name: 'Guest Creator', plan: 'free', generationsLeft: 5, loggedIn: false },
+            characters: [
+                { id: 'bobo', name: 'Bobo the Banana', emoji: '🍌', personality: 'Playful Comedian', color: '#FFE135', quote: 'Why did the banana go to the doctor? Because he wasn’t peeling well!' },
+                { id: 'mimo', name: 'Mimo the Mango', emoji: '🥭', personality: 'Confident & Dramatic', color: '#FFB300', quote: 'I am the sweetest juice in this entire supermarket!' },
+                { id: 'stella', name: 'Stella the Strawberry', emoji: '🍓', personality: 'Romantic & Clever', color: '#FF5252', quote: 'Little seeds, big heart.' },
+                { id: 'kiki', name: 'Kiki the Pineapple', emoji: '🍍', personality: 'Gossip Queen', color: '#FFD54F', quote: 'Did you hear what the coconut said about the watermelon?' },
+                { id: 'wally', name: 'Wally the Watermelon', emoji: '🍉', personality: 'Friendly Giant', color: '#FF4081', quote: 'So much water, so little time.' },
+                { id: 'coco', name: 'Coco the Coconut', emoji: '🥥', personality: 'Serious with Funny Side', color: '#795548', quote: 'Hard on the outside, coconut water on the inside.' },
+                { id: 'apple', name: 'Apple Boss', emoji: '🍎', personality: 'Strict Manager', color: '#E53935', quote: 'An apple a day keeps the delays away!' },
+                { id: 'grape', name: 'Grape Twins', emoji: '🍇', personality: 'Mischievous Partners', color: '#9C27B0', quote: 'We always stick together in a bunch!' }
+            ],
+            customCharacters: [],
+            trendingPrompts: [
+                { title: "Supermarket Drama", desc: "Bobo Banana accuses Mimo Mango of stealing the spotlight in aisle 4.", category: "Fruit Gossip" },
+                { title: "Apple Boss Office", desc: "Apple Boss fires a rotten orange during Monday morning meeting.", category: "Workplace Comedy" },
+                { title: "TikTok Dance Battle", desc: "Stella Strawberry and Wally Watermelon compete in a viral fruit dance.", category: "Dancing Challenge" },
+                { title: "African Village Proverb", desc: "Kiki Pineapple shares hilarious wisdom about palm wine and monkeys.", category: "African-Inspired Humour" }
+            ],
+            communityVideos: [
+                { id: 'v1', title: "Bobo's Terrible Pickup Line 🍌😂", views: "142K", creator: "FruitMemeKing", emoji: "🍌", setting: "Supermarket", duration: "30s" },
+                { id: 'v2', title: "Apple Boss Loses His Mind! 🍎🔥", views: "389K", creator: "OfficeFruit", emoji: "🍎", setting: "Office", duration: "45s" },
+                { id: 'v3', title: "Strawberry Romance Gone Wrong 🍓💔", views: "95K", creator: "SweetJuice", emoji: "🍓", setting: "Kitchen", duration: "30s" }
+            ],
+            savedProjects: [],
+            currentScript: [
+                { character: 'Bobo the Banana', dialog: "Hey Mimo! Did you hear about the watermelon who joined the gym?", expression: "laughing" },
+                { character: 'Mimo the Mango', dialog: "No Bobo, what happened? Did he get shredded?", expression: "shocked" },
+                { character: 'Bobo the Banana', dialog: "Nah, he just turned into watermelon juice on the treadmill! 😂", expression: "smirking" }
+            ],
+            activeGeneration: null,
+            isPlayingPreview: false,
+            animationTimer: null,
+            speechSynthesisUtterance: null
+        };
+
+        /* ==================== INITIALIZATION ==================== */
+        window.addEventListener('DOMContentLoaded', () => {
+            loadFromLocalStorage();
+            renderHome();
+            renderStudioCharacters();
+            renderSceneEditor();
+            renderLibrary();
+            renderProjects();
+            setupCanvas();
+        });
+
+        function saveToLocalStorage() {
+            localStorage.setItem('fruitytoons_state', JSON.stringify({
+                user: AppState.user,
+                customCharacters: AppState.customCharacters,
+                savedProjects: AppState.savedProjects
+            }));
+            updateProjectCountBadge();
+        }
+
+        function loadFromLocalStorage() {
+            const data = localStorage.getItem('fruitytoons_state');
+            if (data) {
+                try {
+                    const parsed = JSON.parse(data);
+                    AppState.user = parsed.user || AppState.user;
+                    AppState.customCharacters = parsed.customCharacters || [];
+                    AppState.savedProjects = parsed.savedProjects || [];
+                } catch(e) { console.error(e); }
+            }
+            updateProjectCountBadge();
+            updateAuthButton();
+        }
+
+        function updateProjectCountBadge() {
+            document.getElementById('projectCountBadge').innerText = AppState.savedProjects.length;
+        }
+
+        /* ==================== NAVIGATION TAB SWITCHING ==================== */
+        function switchTab(tabId) {
+            AppState.currentTab = tabId;
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+            const targetView = document.getElementById(`view-${tabId}`);
+            if (targetView) targetView.classList.remove('hidden');
+
+            // Update desktop nav buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                if(btn.dataset.target === tabId) {
+                    btn.classList.add('bg-amber-100', 'dark:bg-gray-800', 'text-amber-600', 'dark:text-amber-400');
+                } else {
+                    btn.classList.remove('bg-amber-100', 'dark:bg-gray-800', 'text-amber-600', 'dark:text-amber-400');
+                }
+            });
+
+            // Update mobile nav buttons
+            document.querySelectorAll('.mobile-nav-btn').forEach(btn => {
+                if(btn.dataset.target === tabId) {
+                    btn.classList.add('text-amber-500');
+                    btn.classList.remove('text-gray-500', 'dark:text-gray-400');
+                } else {
+                    btn.classList.remove('text-amber-500');
+                    btn.classList.add('text-gray-500', 'dark:text-gray-400');
+                }
+            });
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        /* ==================== RENDER HOME VIEW ==================== */
+        function renderHome() {
+            // Trending Prompts
+            const promptsContainer = document.getElementById('trendingPromptsGrid');
+            promptsContainer.innerHTML = AppState.trendingPrompts.map(p => `
+                <div onclick="loadPromptIntoStudio('${p.title}', '${p.desc}', '${p.category}')" class="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-amber-100 dark:border-gray-700 shadow-sm hover:border-amber-400 cursor-pointer transition transform hover:-translate-y-1 space-y-2">
+                    <span class="text-[10px] font-semibold uppercase px-2 py-0.5 rounded-md bg-amber-100 dark:bg-gray-700 text-amber-700 dark:text-amber-300">${p.category}</span>
+                    <h4 class="font-cartoon font-bold text-lg">${p.title}</h4>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2">${p.desc}</p>
+                </div>
+            `).join('');
+
+            // Home Characters Showcase
+            const charsContainer = document.getElementById('homeCharactersGrid');
+            const allChars = [...AppState.characters, ...AppState.customCharacters].slice(0, 4);
+            charsContainer.innerHTML = allChars.map(c => `
+                <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-amber-100 dark:border-gray-700 shadow-sm text-center space-y-3 hover:shadow-md transition">
+                    <div class="w-16 h-16 mx-auto rounded-2xl bg-amber-100 dark:bg-gray-700 flex items-center justify-center text-3xl shadow-inner">${c.emoji}</div>
+                    <div>
+                        <h4 class="font-cartoon font-bold text-base">${c.name}</h4>
+                        <span class="text-xs text-rose-500 font-medium">${c.personality}</span>
+                    </div>
+                </div>
+            `).join('');
+
+            renderCommunityVideos();
+        }
+
+        function renderCommunityVideos() {
+            const container = document.getElementById('communityVideosGrid');
+            container.innerHTML = AppState.communityVideos.map(v => `
+                <div class="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden border border-amber-100 dark:border-gray-700 shadow-sm flex flex-col">
+                    <div class="relative bg-gradient-to-b from-gray-900 to-gray-950 aspect-[9/16] flex items-center justify-center text-center p-6">
+                        <div class="absolute inset-0 bg-cover opacity-30 flex items-center justify-center text-8xl">${v.emoji}</div>
+                        <div class="relative z-10 space-y-3">
+                            <div class="w-16 h-16 mx-auto rounded-full bg-amber-400/20 backdrop-blur-md flex items-center justify-center text-3xl text-amber-400 shadow-lg">
+                                <i class="fa-solid fa-play ml-1"></i>
+                            </div>
+                            <h4 class="font-cartoon text-xl font-bold text-white">${v.title}</h4>
+                        </div>
+                        <div class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md text-white text-[10px] px-2 py-1 rounded-md">
+                            🎬 ${v.duration} • 👁️ ${v.views}
+                        </div>
+                    </div>
+                    <div class="p-4 flex items-center justify-between">
+                        <span class="text-xs text-gray-500 dark:text-gray-400 font-medium">By @${v.creator}</span>
+                        <button onclick="playCommunityDemo('${v.title}')" class="px-3 py-1.5 rounded-xl bg-amber-400/20 text-amber-600 dark:text-amber-400 font-semibold text-xs hover:bg-amber-400/30 transition">
+                            Load in Studio
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function loadPromptIntoStudio(title, desc, category) {
+            document.getElementById('storyPromptInput').value = desc;
+            document.getElementById('comedyCategorySelect').value = category;
+            switchTab('studio');
+            showToast(`Loaded prompt: "${title}" into Studio! ✨`);
+        }
+
+        function playCommunityDemo(title) {
+            document.getElementById('storyPromptInput').value = title;
+            switchTab('studio');
+            showToast(`Loaded community skit into Studio! ✨`);
+        }
+
+        function loadDemoVideos() {
+            showToast("Refreshed community feed with new viral hits!");
+            renderCommunityVideos();
+        }
+
+        /* ==================== AI STUDIO CONTROLS & SCRIPT EDITOR ==================== */
+        function renderStudioCharacters() {
+            const container = document.getElementById('studioCharacterCheckboxes');
+            const allChars = [...AppState.characters, ...AppState.customCharacters];
+            container.innerHTML = allChars.map((c, i) => `
+                <label class="flex items-center space-x-2 p-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 cursor-pointer hover:border-amber-400 transition">
+                    <input type="checkbox" name="studioChar" value="${c.name}" ${i < 2 ? 'checked' : ''} class="rounded text-amber-500 focus:ring-amber-400">
+                    <span class="text-xl">${c.emoji}</span>
+                    <span class="text-xs font-semibold truncate">${c.name}</span>
+                </label>
+            `).join('');
+        }
+
+        function renderSceneEditor() {
+            const container = document.getElementById('sceneEditorContainer');
+            container.innerHTML = AppState.currentScript.map((scene, idx) => `
+                <div class="flex items-center space-x-3 bg-gray-50 dark:bg-gray-900 p-4 rounded-2xl border border-gray-200 dark:border-gray-700">
+                    <div class="w-8 h-8 rounded-xl bg-amber-400/20 text-amber-600 dark:text-amber-400 font-cartoon font-bold flex items-center justify-center text-sm flex-shrink-0">
+                        #${idx + 1}
+                    </div>
+                    <div class="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        <select onchange="updateSceneChar(${idx}, this.value)" class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-2 text-xs">
+                            ${[...AppState.characters, ...AppState.customCharacters].map(c => `
+                                <option value="${c.name}" ${c.name === scene.character ? 'selected' : ''}>${c.emoji} ${c.name}</option>
+                            `).join('')}
+                        </select>
+                        <input type="text" value="${scene.dialog}" oninput="updateSceneDialog(${idx}, this.value)" class="sm:col-span-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-2 text-xs" placeholder="Character dialogue...">
+                    </div>
+                    <button onclick="deleteScene(${idx})" class="p-2 text-gray-400 hover:text-rose-500 transition">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function addScene() {
+            AppState.currentScript.push({
+                character: AppState.characters[0].name,
+                dialog: "And then things got even juicier!",
+                expression: "laughing"
+            });
+            renderSceneEditor();
+            showToast("Added new scene!");
+        }
+
+        function deleteScene(idx) {
+            if (AppState.currentScript.length <= 1) {
+                showToast("You need at least 1 scene in your cartoon!");
+                return;
+            }
+            AppState.currentScript.splice(idx, 1);
+            renderSceneEditor();
+            showToast("Deleted scene.");
+        }
+
+        function updateSceneChar(idx, val) {
+            AppState.currentScript[idx].character = val;
+        }
+
+        function updateSceneDialog(idx, val) {
+            AppState.currentScript[idx].dialog = val;
+        }
+
+        function generateScriptWithAI() {
+            const prompt = document.getElementById('storyPromptInput').value.trim() || "Bobo Banana and Mimo Mango argue over who is sweeter";
+            const category = document.getElementById('comedyCategorySelect').value;
+
+            // Generate hilarious AI script based on prompt & category
+            AppState.currentScript = [
+                { character: "Bobo the Banana", dialog: `Listen up! Everyone in this ${category.toLowerCase()} knows I'm the star!`, expression: "smirking" },
+                { character: "Mimo the Mango", dialog: `Excuse me Bobo? You literally slip on yourself every time you walk!`, expression: "angry" },
+                { character: "Stella the Strawberry", dialog: `Both of you calm down, or Apple Boss is going to give us all detention! 😂`, expression: "laughing" },
+                { character: "Apple Boss", dialog: `Who is making noise in my hallway?! Get back to work immediately!`, expression: "shocked" }
+            ];
+            renderSceneEditor();
+            showToast("✨ AI generated hilarious script successfully!");
+            confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
+        }
+
+        /* ==================== VIDEO GENERATION & CANVAS PLAYER ==================== */
+        let canvas, ctx;
+        function setupCanvas() {
+            canvas = document.getElementById('cartoonCanvas');
+            if(!canvas) return;
+            ctx = canvas.getContext('2d');
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            drawPlaceholderCanvas();
+        }
+
+        function resizeCanvas() {
+            if(!canvas) return;
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = 720;
+            canvas.height = 1280; // 9:16 vertical
+        }
+
+        function drawPlaceholderCanvas() {
+            if(!ctx) return;
+            ctx.fillStyle = "#1E1E26";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw cartoon background gradient
+            const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            grad.addColorStop(0, "#3B82F6");
+            grad.addColorStop(1, "#1E1E26");
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw placeholder fruit illustration
+            ctx.font = "120px sans-serif";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText("🍌 🎬 🥭", canvas.width/2, canvas.height/2 - 50);
+
+            ctx.fillStyle = "#FFFFFF";
+            ctx.font = "bold 36px 'Fredoka', sans-serif";
+            ctx.fillText("FruityToons AI Studio", canvas.width/2, canvas.height/2 + 80);
+
+            ctx.font = "20px 'Poppins', sans-serif";
+            ctx.fillStyle = "rgba(255,255,255,0.7)";
+            ctx.fillText("Click 'Generate Viral Cartoon' below", canvas.width/2, canvas.height/2 + 130);
+        }
+
+        function startVideoGeneration() {
+            const btn = document.getElementById('generateVideoBtn');
+            const progressBox = document.getElementById('generationProgressBox');
+            const progressBar = document.getElementById('generationProgressBar');
+            const statusText = document.getElementById('generationStatusText');
+            const percentText = document.getElementById('generationPercentText');
+
+            btn.disabled = true;
+            progressBox.classList.remove('hidden');
+            document.getElementById('playerPlaceholder').classList.add('hidden');
+
+            let progress = 0;
+            const steps = [
+                "1. Analyzing story prompt & setting...",
+                "2. Generating character dialogues & expressions...",
+                "3. Synthesizing AI character voices & BGM...",
+                "4. Rendering cartoon scenes & subtitles...",
+                "5. Finalizing MP4 viral export..."
+            ];
+
+            const interval = setInterval(() => {
+                progress += 2;
+                progressBar.style.width = `${progress}%`;
+                percentText.innerText = `${progress}%`;
+
+                const stepIndex = Math.min(Math.floor(progress / 20), steps.length - 1);
+                statusText.innerText = steps[stepIndex];
+
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    btn.disabled = false;
+                    progressBox.classList.add('hidden');
+                    document.getElementById('playPreviewBtn').disabled = false;
+                    document.getElementById('stopPreviewBtn').disabled = false;
+                    document.getElementById('postGenerationActions').classList.remove('hidden');
+
+                    // Save to user projects
+                    const newProj = {
+                        id: 'proj_' + Date.now(),
+                        title: document.getElementById('storyPromptInput').value.slice(0, 30) || "Funny Fruit Skit",
+                        date: new Date().toLocaleDateString(),
+                        duration: document.getElementById('durationSelect').value + 's',
+                        setting: document.getElementById('settingSelect').value,
+                        thumbnailEmoji: '🍌'
+                    };
+                    AppState.savedProjects.unshift(newProj);
+                    saveToLocalStorage();
+                    renderProjects();
+
+                    showToast("🎉 Cartoon video generated successfully!");
+                    confetti({ particleCount: 100, spread: 80, origin: { y: 0.5 } });
+
+                    // Auto play preview
+                    playPreview();
+                }
+            }, 60);
+        }
+
+        let currentSceneIndex = 0;
+        let animationInterval = null;
+
+        function playPreview() {
+            if (AppState.currentScript.length === 0) return;
+            AppState.isPlayingPreview = true;
+            currentSceneIndex = 0;
+            runSceneAnimation();
+        }
+
+        function runSceneAnimation() {
+            if (!AppState.isPlayingPreview) return;
+            if (currentSceneIndex >= AppState.currentScript.length) {
+                currentSceneIndex = 0; // loop
+            }
+
+            const scene = AppState.currentScript[currentSceneIndex];
+            const setting = document.getElementById('settingSelect').value;
+            const charObj = [...AppState.characters, ...AppState.customCharacters].find(c => c.name === scene.character) || AppState.characters[0];
+
+            // Draw background & character on canvas
+            if(ctx) {
+                // Background
+                ctx.fillStyle = setting === 'Office' ? '#1E293B' : (setting === 'Kitchen' ? '#78350F' : '#047857');
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Setting label top
+                ctx.fillStyle = "rgba(0,0,0,0.5)";
+                ctx.fillRect(40, 40, canvas.width - 80, 60);
+                ctx.fillStyle = "#FFD54F";
+                ctx.font = "bold 28px 'Fredoka', sans-serif";
+                ctx.textAlign = "center";
+                ctx.fillText(`📍 Setting: ${setting}`, canvas.width/2, 77);
+
+                // Character Big Emoji with bounce
+                ctx.font = "200px sans-serif";
+                ctx.fillText(charObj.emoji, canvas.width/2, canvas.height/2 - 50);
+
+                // Character Name Tag
+                ctx.fillStyle = "rgba(0,0,0,0.6)";
+                ctx.roundRect ? ctx.beginPath() || ctx.roundRect(canvas.width/2 - 200, canvas.height/2 + 80, 400, 60, 20) : null;
+                ctx.fill();
+                ctx.fillStyle = "#FFFFFF";
+                ctx.font = "bold 32px 'Fredoka', sans-serif";
+                ctx.fillText(scene.character, canvas.width/2, canvas.height/2 + 118);
+            }
+
+            // Subtitle overlay
+            const sub = document.getElementById('subtitleOverlay');
+            sub.innerText = `${charObj.emoji} "${scene.dialog}"`;
+            sub.style.opacity = '1';
+
+            // Speak dialog using SpeechSynthesis if available
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(scene.dialog);
+                utterance.rate = 1.1;
+                window.speechSynthesis.speak(utterance);
+            }
+
+            currentSceneIndex++;
+            animationInterval = setTimeout(runSceneAnimation, 4000);
+        }
+
+        function stopPreview() {
+            AppState.isPlayingPreview = false;
+            if(animationInterval) clearTimeout(animationInterval);
+            if('speechSynthesis' in window) window.speechSynthesis.cancel();
+            document.getElementById('subtitleOverlay').style.opacity = '0';
+            drawPlaceholderCanvas();
+            showToast("Playback stopped.");
+        }
+
+        function downloadVideoMP4() {
+            showToast("Downloading MP4 video (Watermark-Free Pro Export)...");
+            // Simulate download blob
+            const blob = new Blob(["FruityToons AI Video Stream"], { type: "video/mp4" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `FruityToons_${Date.now()}.mp4`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            confetti({ particleCount: 70, spread: 70 });
+        }
+
+        function shareToTikTok() {
+            showToast("Opening TikTok & Reels share sheet...");
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Check out my hilarious FruityToons AI cartoon!',
+                    text: 'Made in seconds with FruityToons AI 🍌😂',
+                    url: window.location.href
+                }).catch(() => {});
+            } else {
+                alert("Video link copied to clipboard! Ready to paste into TikTok or Instagram Reels.");
+            }
+        }
+
+        function copyMetadata() {
+            const tags = "#FruityToons #FunnyCartoons #BoboBanana #TikTokComedy #ViralReels #FruitMeme #AnimationAI";
+            navigator.clipboard.writeText(tags);
+            showToast("Copied viral title & hashtags to clipboard! 📋");
+        }
+
+        /* ==================== CHARACTER LIBRARY & CUSTOM FRUIT ==================== */
+        function renderLibrary() {
+            const container = document.getElementById('libraryCharactersGrid');
+            const allChars = [...AppState.characters, ...AppState.customCharacters];
+            container.innerHTML = allChars.map(c => `
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-3xl border border-amber-100 dark:border-gray-700 shadow-sm text-center space-y-4 hover:shadow-md transition">
+                    <div class="w-20 h-20 mx-auto rounded-2xl bg-amber-100 dark:bg-gray-700 flex items-center justify-center text-4xl shadow-inner">${c.emoji}</div>
+                    <div class="space-y-1">
+                        <h4 class="font-cartoon font-bold text-xl">${c.name}</h4>
+                        <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 dark:bg-gray-700 text-amber-700 dark:text-amber-300">${c.personality}</span>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 italic pt-2">"${c.quote}"</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openCustomFruitModal() {
+            document.getElementById('customFruitModal').classList.remove('hidden');
+        }
+
+        function closeCustomFruitModal() {
+            document.getElementById('customFruitModal').classList.add('hidden');
+        }
+
+        function saveCustomFruit() {
+            const name = document.getElementById('customFruitName').value.trim();
+            const emoji = document.getElementById('customFruitEmoji').value;
+            const personality = document.getElementById('customFruitPersonality').value;
+            const quote = document.getElementById('customFruitQuote').value.trim() || "Ready to squeeze some fun!";
+
+            if(!name) {
+                showToast("Please enter a name for your custom fruit!");
+                return;
+            }
+
+            const newFruit = { id: 'custom_' + Date.now(), name, emoji, personality, quote };
+            AppState.customCharacters.push(newFruit);
+            saveToLocalStorage();
+            renderLibrary();
+            renderStudioCharacters();
+            closeCustomFruitModal();
+            showToast(`✨ Created custom fruit star: ${name}!`);
+            confetti({ particleCount: 60, spread: 70 });
+        }
+
+        /* ==================== PROJECTS & CLOUD STORAGE ==================== */
+        function renderProjects() {
+            const container = document.getElementById('savedProjectsGrid');
+            if(AppState.savedProjects.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full py-12 text-center space-y-3 bg-white dark:bg-gray-800 rounded-3xl border border-amber-100 dark:border-gray-700">
+                        <div class="text-5xl">🎬</div>
+                        <h4 class="font-cartoon font-bold text-lg">No saved cartoons yet</h4>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Generate your first cartoon in the AI Studio!</p>
+                        <button onclick="switchTab('studio')" class="px-5 py-2.5 rounded-xl bg-amber-400 text-gray-900 font-semibold text-xs shadow-md">Create Now</button>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = AppState.savedProjects.map(p => `
+                <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 border border-amber-100 dark:border-gray-700 shadow-sm space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div class="w-12 h-12 rounded-2xl bg-amber-100 dark:bg-gray-700 flex items-center justify-center text-2xl">${p.thumbnailEmoji}</div>
+                        <span class="text-xs px-2.5 py-1 rounded-full bg-purple-100 dark:bg-gray-700 text-purple-600 dark:text-purple-300 font-semibold">📍 ${p.setting}</span>
+                    </div>
+                    <div>
+                        <h4 class="font-cartoon font-bold text-lg line-clamp-1">${p.title}</h4>
+                        <span class="text-xs text-gray-400">Created on ${p.date} • ⏱️ ${p.duration}</span>
+                    </div>
+                    <div class="flex items-center space-x-2 pt-2 border-t border-gray-100 dark:border-gray-700">
+                        <button onclick="loadPromptIntoStudio('${p.title}', '${p.title}', 'Fruit Gossip')" class="flex-1 py-2 rounded-xl bg-amber-400/20 text-amber-600 dark:text-amber-400 font-semibold text-xs hover:bg-amber-400/30 transition">
+                            <i class="fa-solid fa-pen mr-1"></i> Re-Edit
+                        </button>
+                        <button onclick="downloadVideoMP4()" class="flex-1 py-2 rounded-xl bg-emerald-500 text-white font-semibold text-xs hover:bg-emerald-600 transition">
+                            <i class="fa-solid fa-download mr-1"></i> Download
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        /* ==================== AUTH & PRICING ==================== */
+        function openAuthModal() {
+            document.getElementById('authModal').classList.remove('hidden');
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authModal').classList.add('hidden');
+        }
+
+        function handleAuthSubmit() {
+            const email = document.getElementById('authEmail').value.trim();
+            if(!email) {
+                showToast("Please enter a valid email!");
+                return;
+            }
+            AppState.user.loggedIn = true;
+            AppState.user.name = email.split('@')[0];
+            saveToLocalStorage();
+            updateAuthButton();
+            closeAuthModal();
+            showToast(`Welcome back, ${AppState.user.name}! ✨`);
+            confetti({ particleCount: 50, spread: 60 });
+        }
+
+        function loginAsGuest() {
+            AppState.user.loggedIn = true;
+            AppState.user.name = "Guest Creator";
+            saveToLocalStorage();
+            updateAuthButton();
+            closeAuthModal();
+            showToast("Logged in as Guest Creator!");
+        }
+
+        function updateAuthButton() {
+            const btnText = document.getElementById('authBtnText');
+            if (AppState.user.loggedIn) {
+                btnText.innerText = AppState.user.name;
+            } else {
+                btnText.innerText = "Sign In";
+            }
+        }
+
+        function selectPlan(planName) {
+            if (planName === 'pro') {
+                AppState.user.plan = 'pro';
+                saveToLocalStorage();
+                showToast("🚀 Upgraded to Pro Creator Plan successfully!");
+                confetti({ particleCount: 150, spread: 100, origin: { y: 0.4 } });
+            } else {
+                showToast("You are currently on the Free Starter Plan.");
+            }
+        }
+
+        /* ==================== THEME & TOAST UTILITIES ==================== */
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+            const icon = document.getElementById('themeIcon');
+            if(document.documentElement.classList.contains('dark')) {
+                icon.className = "fa-solid fa-sun";
+            } else {
+                icon.className = "fa-solid fa-moon";
+            }
+        }
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = "fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white dark:bg-white dark:text-gray-900 px-6 py-3 rounded-2xl shadow-2xl font-semibold text-sm z-50 transition-all duration-300 animate-bounce";
+            toast.innerText = message;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
