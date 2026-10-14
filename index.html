@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FruityToons AI - Cinematic 3D Fruit Drama Studio</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;700;800&display=swap');
+    body { font-family: 'Nunito', sans-serif; background-color: #0f172a; color: #f8fafc; }
+    h1, h2, h3, h4, .brand-font { font-family: 'Fredoka', cursive; }
+    .canvas-container { position: relative; width: 100%; aspect-ratio: 9/16; background: #1c1917; border-radius: 1rem; overflow: hidden; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.5); }
+    .aspect-sq { aspect-ratio: 1/1 !important; }
+    .aspect-ls { aspect-ratio: 16/9 !important; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #f59e0b; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col pb-20 md:pb-0">
+
+  <!-- TOP NAVBAR -->
+  <header class="bg-slate-900/90 backdrop-blur sticky top-0 z-50 border-b border-slate-800 px-4 py-3">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-2 cursor-pointer" onclick="switchTab('home')">
+        <span class="text-3xl">🍓</span>
+        <span class="brand-font text-2xl font-bold bg-gradient-to-r from-amber-400 via-orange-400 to-red-500 bg-clip-text text-transparent">FruityToons AI</span>
+      </div>
+      <nav class="hidden md:flex items-center gap-6 text-sm font-semibold">
+        <button onclick="switchTab('home')" class="hover:text-amber-400 transition">Home</button>
+        <button onclick="switchTab('studio')" class="hover:text-amber-400 transition">Studio</button>
+        <button onclick="switchTab('characters')" class="hover:text-amber-400 transition">Characters</button>
+        <button onclick="switchTab('my-videos')" class="hover:text-amber-400 transition">My Projects</button>
+      </nav>
+      <button onclick="switchTab('studio')" class="bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold px-4 py-2 rounded-full shadow-lg hover:brightness-110 transition text-sm flex items-center gap-2">
+        <i class="fa-solid fa-wand-magic-sparkles"></i> Create 3D Drama
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4">
+
+    <!-- HOME TAB -->
+    <section id="tab-home" class="space-y-10">
+      <div class="bg-gradient-to-br from-amber-500/20 via-slate-800 to-slate-900 border border-amber-500/30 rounded-3xl p-6 md:p-12 text-center relative overflow-hidden">
+        <div class="max-w-2xl mx-auto space-y-4">
+          <span class="bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold text-xs px-3 py-1 rounded-full uppercase tracking-wider">Cinematic 3D Family & School Dramas</span>
+          <h1 class="text-4xl md:text-6xl font-bold text-white leading-tight">Create Viral 3D Fruit & Veggie Dramas! 🥕🍓🍎</h1>
+          <p class="text-slate-300 text-sm md:text-base">Produce emotional hallway arguments, family confrontations, and funny school moments starring humanoid produce with realistic clothes and expressions.</p>
+          <div class="pt-4 flex flex-col sm:flex-row gap-4 justify-center">
+            <button onclick="switchTab('studio')" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-8 py-4 rounded-2xl shadow-xl transition transform hover:scale-105 text-lg flex items-center justify-center gap-2">
+              <i class="fa-solid fa-play"></i> Open 3D Studio
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TRENDING DRAMA PROMPTS -->
+      <div>
+        <h2 class="text-2xl font-bold mb-4 flex items-center gap-2 text-amber-400">
+          <i class="fa-solid fa-fire"></i> Trending Cinematic Drama Prompts
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          <div onclick="useQuickIdea('Carrot teen sneaks back home late with a backpack while Apple Mom confronts him in the hallway')" class="bg-slate-800 p-4 rounded-xl border border-slate-700 cursor-pointer hover:border-amber-500 transition space-y-2">
+            <span class="text-2xl">🥕 vs 🍎</span>
+            <h3 class="font-bold text-slate-100">The Hallway Confrontation</h3>
+            <p class="text-xs text-slate-400">Apple Mom catches Carrot son sneaking in past curfew with his backpack.</p>
+          </div>
+          <div onclick="useQuickIdea('Strawberry teenager cries in the hallway because Banana rejected her study invite')" class="bg-slate-800 p-4 rounded-xl border border-slate-700 cursor-pointer hover:border-amber-500 transition space-y-2">
+            <span class="text-2xl">🍓 vs 🍌</span>
+            <h3 class="font-bold text-slate-100">School Heartbreak</h3>
+            <p class="text-xs text-slate-400">Emotional school hallway drama between teenage fruit classmates.</p>
+          </div>
+          <div onclick="useQuickIdea('Broccoli strict dad argues with Potato son about failing his math exam')" class="bg-slate-800 p-4 rounded-xl border border-slate-700 cursor-pointer hover:border-amber-500 transition space-y-2">
+            <span class="text-2xl">🥦 vs 🥔</span>
+            <h3 class="font-bold text-slate-100">Report Card Panic</h3>
+            <p class="text-xs text-slate-400">Intense living room argument over failing grades.</p>
+          </div>
+          <div onclick="useQuickIdea('Pineapple gossip queen spreads a fake rumor in the school hallway about Watermelon')" class="bg-slate-800 p-4 rounded-xl border border-slate-700 cursor-pointer hover:border-amber-500 transition space-y-2">
+            <span class="text-2xl">🍍 vs 🍉</span>
+            <h3 class="font-bold text-slate-100">Hallway Gossip</h3>
+            <p class="text-xs text-slate-400">Classic high school rumor drama caught on camera.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STUDIO TAB -->
+    <section id="tab-studio" class="hidden space-y-6">
+      <div class="flex items-center justify-between">
+        <h2 class="text-2xl font-bold text-amber-400 flex items-center gap-2">
+          <i class="fa-solid fa-clapperboard"></i> 3D Cinematic Drama Studio
+        </h2>
+        <span class="text-xs bg-slate-800 text-slate-400 px-3 py-1 rounded-full border border-slate-700">Pixar-Style Humanoid Engine</span>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- CONTROL PANEL -->
+        <div class="lg:col-span-7 bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-5">
+          
+          <div class="space-y-2">
+            <label class="font-bold text-sm text-slate-200 flex items-center justify-between">
+              <span>1. Enter Drama Story Prompt</span>
+              <span class="text-xs text-amber-400 font-normal">Auto-Syncs Script & Voice</span>
+            </label>
+            <textarea id="storyIdea" rows="3" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-sm text-slate-100 focus:outline-none focus:border-amber-500 transition" placeholder="e.g., Carrot teen gets caught sneaking into the house by Apple Mom..."></textarea>
+            <button onclick="generateAIScript()" class="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:brightness-110 text-slate-950 font-bold py-3 rounded-xl shadow-md transition flex items-center justify-center gap-2">
+              <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Cinematic Script
+            </button>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <div>
+              <label class="block text-xs text-slate-400 mb-1 font-semibold">Setting</label>
+              <select id="videoSetting" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-200">
+                <option value="hallway">Home Hallway / Doorway</option>
+                <option value="school">School Corridor</option>
+                <option value="livingroom">Living Room</option>
+                <option value="kitchen">Kitchen Counter</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs text-slate-400 mb-1 font-semibold">Voice Tone</label>
+              <select id="voicePitch" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-200">
+                <option value="1.2">Teens / High-Pitched</option>
+                <option value="1.0" selected>Normal Drama</option>
+                <option value="0.7">Strict Parent (Deep)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs text-slate-400 mb-1 font-semibold">Aspect Ratio</label>
+              <select id="aspectRatio" onchange="changeAspectRatio()" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-200">
+                <option value="9:16">Portrait (9:16 - Shorts/Reels)</option>
+                <option value="1:1">Square (1:1)</option>
+                <option value="16:9">Landscape (16:9)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="space-y-3">
+            <h3 class="font-bold text-sm text-slate-200 border-b border-slate-800 pb-2">Scene Dialogue Editor</h3>
+            <div id="scriptPreviewContainer" class="space-y-3 max-h-60 overflow-y-auto pr-1">
+              <p class="text-xs text-slate-500 italic text-center py-4">Generate a cinematic script above to edit dialogue.</p>
+            </div>
+          </div>
+
+          <button onclick="renderVideo()" class="w-full bg-green-500 hover:bg-green-400 text-slate-950 font-extrabold py-4 rounded-xl shadow-lg transition text-base flex items-center justify-center gap-2">
+            <i class="fa-solid fa-play"></i> Render & Play 3D Animation
+          </button>
+        </div>
+
+        <!-- CANVAS PREVIEW -->
+        <div class="lg:col-span-5 space-y-4">
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+            <h3 class="font-bold text-sm text-slate-200 mb-3 flex items-center justify-between">
+              <span>Cinematic 3D Preview</span>
+              <span id="speakerIndicator" class="text-xs text-amber-400 font-bold">Idle</span>
+            </h3>
+            
+            <div id="canvasBox" class="canvas-container flex items-center justify-center">
+              <canvas id="cartoonCanvas" width="360" height="640" class="w-full h-full object-cover"></canvas>
+            </div>
+
+            <div class="mt-4 flex items-center justify-center gap-4">
+              <button onclick="playCanvasAnimation()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 px-5 py-2.5 rounded-xl font-bold text-sm flex items-center gap-2">
+                <i class="fa-solid fa-play"></i> Play Preview
+              </button>
+              <button onclick="downloadVideoDraft()" class="bg-slate-800 hover:bg-slate-700 text-white px-5 py-2.5 rounded-xl font-bold text-sm flex items-center gap-2 border border-slate-700">
+                <i class="fa-solid fa-download"></i> Save Draft
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CHARACTERS TAB -->
+    <section id="tab-characters" class="hidden space-y-6">
+      <div class="flex items-center justify-between">
+        <h2 class="text-2xl font-bold text-amber-400 flex items-center gap-2">
+          <i class="fa-solid fa-users"></i> 3D Character Cast
+        </h2>
+      </div>
+      <div id="characterGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4"></div>
+    </section>
+
+    <!-- MY PROJECTS TAB -->
+    <section id="tab-my-videos" class="hidden space-y-6">
+      <h2 class="text-2xl font-bold text-amber-400 flex items-center gap-2">
+        <i class="fa-solid fa-folder-open"></i> My Saved Dramas
+      </h2>
+      <div id="projectsGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <p class="text-sm text-slate-400">No saved dramas yet.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MOBILE BOTTOM NAVIGATION -->
+  <div class="md:hidden fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur border-t border-slate-800 px-4 py-2 flex justify-around z-50">
+    <button onclick="switchTab('home')" class="flex flex-col items-center gap-1 text-slate-400 hover:text-amber-400 text-xs font-semibold">
+      <i class="fa-solid fa-house text-lg"></i> Home
+    </button>
+    <button onclick="switchTab('studio')" class="flex flex-col items-center gap-1 text-slate-400 hover:text-amber-400 text-xs font-semibold">
+      <i class="fa-solid fa-wand-magic-sparkles text-lg"></i> Studio
+    </button>
+    <button onclick="switchTab('characters')" class="flex flex-col items-center gap-1 text-slate-400 hover:text-amber-400 text-xs font-semibold">
+      <i class="fa-solid fa-users text-lg"></i> Cast
+    </button>
+    <button onclick="switchTab('my-videos')" class="flex flex-col items-center gap-1 text-slate-400 hover:text-amber-400 text-xs font-semibold">
+      <i class="fa-solid fa-folder text-lg"></i> Projects
+    </button>
+  </div>
+
+  <script>
+    // 3D HUMANOID PRODUCE CAST
+    const characters = [
+      { id: 'carrot', name: 'Carrot Teen', role: 'Son / Student', icon: '🥕', shape: 'carrot', outfit: 'Denim Jacket & Backpack', primaryColor: '#ea580c', secondaryColor: '#16a34a' },
+      { id: 'strawberry', name: 'Strawberry Teen', role: 'Daughter / Classmate', icon: '🍓', shape: 'strawberry', outfit: 'White Hoodie & Shorts', primaryColor: '#dc2626', secondaryColor: '#16a34a' },
+      { id: 'apple', name: 'Apple Mom', role: 'Strict Mother', icon: '🍎', shape: 'apple', outfit: 'Cardigan & Jeans', primaryColor: '#b91c1c', secondaryColor: '#15803d' },
+      { id: 'broccoli', name: 'Broccoli Dad', role: 'Strict Father', icon: '🥦', shape: 'broccoli', outfit: 'Sweater & Glasses', primaryColor: '#15803d', secondaryColor: '#14532d' },
+      { id: 'pineapple', name: 'Pineapple Gossip', role: 'Classmate', icon: '🍍', shape: 'pineapple', outfit: 'Trendy Jacket', primaryColor: '#eab308', secondaryColor: '#15803d' }
+    ];
+
+    let currentScript = null;
+    let animInterval = null;
+    let isSpeaking = false;
+    let mouthOpening = 0;
+
+    function switchTab(tabId) {
+      ['home', 'studio', 'characters', 'my-videos'].forEach(t => {
+        document.getElementById(`tab-${t}`).classList.add('hidden');
+      });
+      document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+      window.scrollTo(0, 0);
+    }
+
+    function useQuickIdea(idea) {
+      document.getElementById('storyIdea').value = idea;
+      switchTab('studio');
+      generateAIScript();
+    }
+
+    function renderCharacters() {
+      const grid = document.getElementById('characterGrid');
+      grid.innerHTML = characters.map(c => `
+        <div class="bg-slate-800 border border-slate-700 rounded-xl p-4 text-center space-y-2 hover:border-amber-500 transition">
+          <div class="text-5xl mb-2">${c.icon}</div>
+          <h3 class="font-bold text-slate-100 text-sm">${c.name}</h3>
+          <p class="text-xs text-amber-400 font-medium">${c.role}</p>
+          <p class="text-[10px] text-slate-400">${c.outfit}</p>
+        </div>
+      `).join('');
+    }
+
+    function generateAIScript() {
+      const ideaInput = document.getElementById('storyIdea').value.trim();
+      if (!ideaInput) {
+        alert("Please enter a drama story prompt first!");
+        return;
+      }
+
+      const lower = ideaInput.toLowerCase();
+      let char1 = characters[0]; // Carrot Teen
+      let char2 = characters[2]; // Apple Mom
+
+      if (lower.includes("strawberry") || lower.includes("school") || lower.includes("class")) {
+        char1 = characters[1]; // Strawberry
+        char2 = characters[4]; // Pineapple
+      } else if (lower.includes("dad") || lower.includes("exam") || lower.includes("broccoli")) {
+        char1 = characters[3]; // Broccoli Dad
+        char2 = characters[0]; // Carrot Teen
+      }
+
+      currentScript = {
+        topic: ideaInput,
+        scenes: [
+          {
+            speaker: char1.name,
+            charData: char1,
+            expression: "worried",
+            dialogue: `Listen... I can explain everything! ${ideaInput}!`,
+            durationSec: 5
+          },
+          {
+            speaker: char2.name,
+            charData: char2,
+            expression: "angry",
+            dialogue: `You expect me to believe that?! Look at me when I am talking to you!`,
+            durationSec: 5
+          },
+          {
+            speaker: char1.name,
+            charData: char1,
+            expression: "crying",
+            dialogue: `I'm telling you the truth! Please don't ground me!`,
+            durationSec: 5
+          }
+        ]
+      };
+
+      renderScriptPreview();
+    }
+
+    function renderScriptPreview() {
+      const container = document.getElementById('scriptPreviewContainer');
+      if (!currentScript) return;
+
+      container.innerHTML = `
+        <div class="bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 mb-3">
+          <p class="text-xs text-amber-300 font-bold">Drama Prompt: "${currentScript.topic}"</p>
+        </div>
+        ${currentScript.scenes.map((s, idx) => `
+          <div class="bg-slate-800 p-3 rounded-xl border border-slate-700 flex items-start gap-3">
+            <span class="text-2xl">${s.charData.icon}</span>
+            <div class="flex-1 space-y-1">
+              <div class="flex justify-between items-center">
+                <span class="text-xs font-bold text-amber-400">${s.speaker}</span>
+                <span class="text-[10px] text-slate-400">Scene ${idx + 1}</span>
+              </div>
+              <input type="text" value="${s.dialogue}" onchange="updateDialogue(${idx}, this.value)" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-slate-200 focus:outline-none focus:border-amber-500"/>
+            </div>
+          </div>
+        `).join('')}
+      `;
+    }
+
+    function updateDialogue(idx, val) {
+      if (currentScript && currentScript.scenes[idx]) {
+        currentScript.scenes[idx].dialogue = val;
+      }
+    }
+
+    function changeAspectRatio() {
+      const val = document.getElementById('aspectRatio').value;
+      const box = document.getElementById('canvasBox');
+      box.classList.remove('aspect-sq', 'aspect-ls');
+      if (val === '1:1') box.classList.add('aspect-sq');
+      if (val === '16:9') box.classList.add('aspect-ls');
+    }
+
+    function renderVideo() {
+      if (!currentScript) generateAIScript();
+      playCanvasAnimation();
+    }
+
+    // DRAW CINEMATIC 3D HUMAN-PROPORTIONED PRODUCE CHARACTER
+    function drawCinematicCharacter(ctx, x, y, charData, isSpeaking, mouthOpenAmount, expression) {
+      ctx.save();
+      ctx.translate(x, y);
+
+      // 1. Torso / Hoodie / Jacket Body
+      ctx.fillStyle = charData.shape === 'carrot' ? '#2563eb' : (charData.shape === 'strawberry' ? '#ffffff' : '#78716c');
+      ctx.beginPath();
+      ctx.roundRect(-40, 20, 80, 110, [15, 15, 5, 5]);
+      ctx.fill();
+      ctx.strokeStyle = "#1c1917";
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      // 2. 3D Head Shape
+      ctx.fillStyle = charData.primaryColor;
+      ctx.beginPath();
+      if (charData.shape === 'carrot') {
+        // Carrot head tapering up into green leaves
+        ctx.moveTo(-40, 20);
+        ctx.lineTo(-20, -80);
+        ctx.lineTo(20, -80);
+        ctx.lineTo(40, 20);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        // Green carrot top leaves
+        ctx.fillStyle = "#16a34a";
+        ctx.beginPath();
+        ctx.moveTo(0, -80); ctx.lineTo(-15, -115); ctx.lineTo(0, -95); ctx.lineTo(15, -115); ctx.closePath();
+        ctx.fill();
+      } else if (charData.shape === 'strawberry') {
+        ctx.beginPath();
+        ctx.ellipse(0, -15, 60, 65, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+        // Stem top
+        ctx.fillStyle = "#16a34a";
+        ctx.beginPath();
+        ctx.moveTo(0, -75); ctx.lineTo(-20, -90); ctx.lineTo(0, -80); ctx.lineTo(20, -90); ctx.closePath();
+        ctx.fill();
+      } else {
+        // Apple / Round Head
+        ctx.beginPath();
+        ctx.arc(0, -15, 62, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+        // Stem
+        ctx.fillStyle = "#78350f";
+        ctx.fillRect(-4, -82, 8, 15);
+      }
+
+      // 3. Human Face Eyes & Expression
+      ctx.fillStyle = "#ffffff";
+      ctx.beginPath();
+      ctx.ellipse(-20, -20, 12, 15, 0, 0, Math.PI * 2);
+      ctx.ellipse(20, -20, 12, 15, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      // Pupils
+      ctx.fillStyle = "#0f172a";
+      ctx.beginPath();
+      ctx.arc(-18, -20, 5, 0, Math.PI * 2);
+      ctx.arc(22, -20, 5, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Eyebrows
+      ctx.strokeStyle = "#000000";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      if (expression === 'angry') {
+        ctx.moveTo(-32, -38); ctx.lineTo(-10, -30);
+        ctx.moveTo(32, -38); ctx.lineTo(10, -30);
+      } else if (expression === 'crying') {
+        ctx.moveTo(-32, -30); ctx.lineTo(-10, -38);
+        ctx.moveTo(32, -30); ctx.lineTo(10, -38);
+      } else {
+        ctx.moveTo(-32, -35); ctx.quadraticCurveTo(-20, -42, -8, -35);
+        ctx.moveTo(8, -35); ctx.quadraticCurveTo(20, -42, 32, -35);
+      }
+      ctx.stroke();
+
+      // 4. Lip-Synced Talking Mouth
+      ctx.fillStyle = "#450a0a";
+      ctx.strokeStyle = "#000000";
+      ctx.lineWidth = 2;
+      const mouthH = isSpeaking ? 6 + mouthOpenAmount * 14 : 3;
+      ctx.beginPath();
+      ctx.ellipse(0, 10, 18, mouthH, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.restore();
+    }
+
+    function playCanvasAnimation() {
+      if (!currentScript) return;
+      const canvas = document.getElementById('cartoonCanvas');
+      const ctx = canvas.getContext('2d');
+      
+      let sceneIdx = 0;
+      let frame = 0;
+      if (animInterval) clearInterval(animInterval);
+
+      triggerSpeech(currentScript.scenes[0].dialogue);
+
+      animInterval = setInterval(() => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Cinematic Hallway Background (Wooden floor & walls)
+        ctx.fillStyle = "#1e1b4b";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        // Wooden Floor Perspective
+        ctx.fillStyle = "#78350f";
+        ctx.fillRect(0, canvas.height - 150, canvas.width, 150);
+        ctx.strokeStyle = "#451a03";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(0, canvas.height - 150); ctx.lineTo(canvas.width, canvas.height - 150);
+        ctx.stroke();
+
+        const scene = currentScript.scenes[sceneIdx];
+        mouthOpening = Math.abs(Math.sin(frame * 0.4));
+
+        // Draw Character in Center
+        drawCinematicCharacter(
+          ctx, 
+          canvas.width / 2, 
+          canvas.height / 2 - 30, 
+          scene.charData, 
+          isSpeaking, 
+          mouthOpening,
+          scene.expression
+        );
+
+        // Character Name & Role
+        ctx.font = "bold 16px Nunito";
+        ctx.fillStyle = "#f59e0b";
+        ctx.textAlign = "center";
+        ctx.fillText(scene.speaker, canvas.width / 2, canvas.height - 170);
+
+        // Subtitle Overlay (Matching Viral Shorts Style)
+        ctx.fillStyle = "rgba(0, 0, 0, 0.85)";
+        ctx.fillRect(15, canvas.height - 100, canvas.width - 30, 75);
+        ctx.strokeStyle = "#f59e0b";
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(15, canvas.height - 100, canvas.width - 30, 75);
+
+        ctx.font = "bold 14px Fredoka";
+        ctx.fillStyle = "#ffffff";
+        wrapText(ctx, `"${scene.dialogue}"`, canvas.width / 2, canvas.height - 65, canvas.width - 50, 20);
+
+        frame++;
+
+        if (frame % 150 === 0) {
+          sceneIdx++;
+          if (sceneIdx < currentScript.scenes.length) {
+            triggerSpeech(currentScript.scenes[sceneIdx].dialogue);
+          } else {
+            clearInterval(animInterval);
+            isSpeaking = false;
+            document.getElementById('speakerIndicator').innerText = 'Idle';
+          }
+        }
+      }, 33);
+    }
+
+    function triggerSpeech(text) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        const pitchVal = parseFloat(document.getElementById('voicePitch').value) || 1.0;
+        utterance.pitch = pitchVal;
+        utterance.rate = 1.0;
+        
+        utterance.onstart = () => {
+          isSpeaking = true;
+          document.getElementById('speakerIndicator').innerText = '🔴 Speaking...';
+        };
+        utterance.onend = () => {
+          isSpeaking = false;
+          document.getElementById('speakerIndicator').innerText = 'Idle';
+        };
+
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+      const words = text.split(' ');
+      let line = '';
+      for (let n = 0; n < words.length; n++) {
+        let testLine = line + words[n] + ' ';
+        let metrics = ctx.measureText(testLine);
+        if (metrics.width > maxWidth && n > 0) {
+          ctx.fillText(line, x, y);
+          line = words[n] + ' ';
+          y += lineHeight;
+        } else {
+          line = testLine;
+        }
+      }
+      ctx.fillText(line, x, y);
+    }
+
+    function downloadVideoDraft() {
+      alert("3D Cinematic Draft saved successfully!");
+    }
+
+    window.onload = () => {
+      renderCharacters();
+    };
+  </script>
+</body>
+</html>
